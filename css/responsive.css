@@ -1,0 +1,186 @@
+@media (max-width: 991.98px) {
+  .site-nav .navbar-collapse {
+    padding: 8px 0 16px;
+  }
+
+  .site-nav .navbar-nav {
+    align-items: stretch !important;
+    gap: 2px !important;
+  }
+
+  .site-nav .nav-link {
+    padding: 11px 0 !important;
+  }
+
+  .site-nav .nav-link.active::after {
+    right: auto;
+    bottom: 5px;
+    left: 0;
+    width: 28px;
+  }
+
+  .site-nav .nav-item .btn {
+    margin-top: 8px;
+  }
+
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .section-intro {
+    max-width: 560px;
+  }
+
+  .principles-panel {
+    grid-template-columns: 1fr;
+    gap: 42px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .hero-section {
+    min-height: 570px;
+  }
+
+  .hero-content {
+    padding-block: 64px 72px;
+  }
+
+  .hero-glow-blue {
+    right: -35%;
+  }
+
+  .hero-orbit {
+    right: -34%;
+  }
+
+  .section-shell {
+    padding-block: 76px;
+  }
+
+  .principles-section {
+    padding-block: 28px 76px;
+  }
+
+  .footer-main,
+  .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-main {
+    gap: 20px;
+  }
+
+  .footer-bottom {
+    justify-content: center;
+    gap: 8px;
+    padding-block: 14px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body {
+    font-size: 14px;
+  }
+
+  .site-nav {
+    min-height: 68px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand-wordmark {
+    font-size: 17px;
+  }
+
+  .hero-content {
+    padding-block: 58px 62px;
+  }
+
+  .hero-section h1 {
+    font-size: clamp(39px, 11vw, 54px);
+  }
+
+  .hero-copy {
+    font-size: 15px;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .hero-footnote {
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+
+  .section-heading h2,
+  .principles-copy h2 {
+    font-size: 36px;
+  }
+
+  .opportunity-card,
+  .form-card {
+    padding: 21px;
+  }
+
+  .card-meta {
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .mini-component {
+    padding: 21px;
+  }
+
+  .principles-panel {
+    gap: 30px;
+    padding: 25px 21px;
+    border-radius: 18px;
+  }
+
+  .principle-item {
+    grid-template-columns: 28px 1fr 16px;
+    gap: 8px;
+  }
+
+  .footer-note {
+    line-height: 1.6;
+  }
+
+  .dialog-content {
+    padding: 27px 24px;
+  }
+
+  .toast-region {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .demo-toast {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
