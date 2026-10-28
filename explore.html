@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#081426">
+    <meta name="description" content="Explore fictional Elmirix business profiles by industry, location, stage, and financial information.">
+    <title>Explore Businesses | Elmirix</title>
+    <link rel="icon" type="image/png" href="assets/logos/elmirix-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet"><link href="css/responsive.css" rel="stylesheet">
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <nav class="navbar navbar-expand-lg site-nav sticky-top" aria-label="Main navigation"><div class="container">
+      <a class="navbar-brand brand-lockup" href="index.html" aria-label="Elmirix home"><img src="assets/logos/elmirix-logo.png" alt="" class="brand-mark"><span class="brand-wordmark">ELMIRIX</span></a>
+      <button class="navbar-toggler nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="main-navigation"><ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li><li class="nav-item"><a class="nav-link active" aria-current="page" href="explore.html">Explore Businesses</a></li><li class="nav-item"><a class="nav-link" href="how-it-works.html">How It Works</a></li><li class="nav-item"><a class="nav-link" href="about.html">About</a></li><li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li><li class="nav-item ms-lg-2"><a class="btn btn-primary-brand btn-sm" href="#business-results">Explore Opportunities <i class="bi bi-arrow-down ms-1" aria-hidden="true"></i></a></li>
+      </ul></div>
+    </div></nav>
+    <main id="main-content">
+      <header class="page-hero"><div class="container"><p class="eyebrow"><span class="eyebrow-dot"></span> DISCOVER WITH CURIOSITY</p><h1>Explore <span class="text-gradient">businesses.</span></h1><p>Browse fictional business profiles and compare the information each sample opportunity shares.</p><div class="breadcrumb-line"><a href="index.html">Home</a><i class="bi bi-chevron-right" aria-hidden="true"></i><span>Explore Businesses</span></div></div></header>
+      <section class="directory-section" id="business-results" aria-labelledby="directory-title">
+        <div class="container">
+          <div class="directory-disclosure"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Demonstration directory — all businesses and figures are fictional sample data, not verified investment opportunities.</span></div>
+          <div class="directory-toolbar">
+            <div class="directory-search"><label for="business-search" class="visually-hidden">Search businesses</label><i class="bi bi-search" aria-hidden="true"></i><input id="business-search" class="form-control form-control-brand" type="search" placeholder="Search name, industry, location, keywords…"><kbd>/</kbd></div>
+            <div class="sort-control"><label for="sort-businesses">Sort by</label><select class="form-select form-control-brand" id="sort-businesses"><option value="newest">Recently updated</option><option value="funding-asc">Funding target: low to high</option><option value="funding-desc">Funding target: high to low</option><option value="revenue-desc">Revenue: high to low</option><option value="margin-desc">Profit margin: high to low</option></select></div>
+          </div>
+          <div class="directory-layout">
+            <aside class="filter-panel" aria-label="Filter businesses">
+              <div class="filter-heading"><h2><i class="bi bi-sliders2" aria-hidden="true"></i> Filters</h2><button class="text-action" type="button" id="clear-filters">Clear all</button></div>
+              <div class="filter-group"><label for="filter-industry">Industry</label><select class="form-select form-control-brand" id="filter-industry"><option value="">All industries</option></select></div>
+              <div class="filter-group"><label for="filter-location">Location</label><select class="form-select form-control-brand" id="filter-location"><option value="">All locations</option></select></div>
+              <div class="filter-group"><label for="filter-stage">Business stage</label><select class="form-select form-control-brand" id="filter-stage"><option value="">All stages</option><option>Idea</option><option>Early Stage</option><option>Growing</option><option>Established</option></select></div>
+              <div class="filter-group"><label for="filter-profitability">Profitability</label><select class="form-select form-control-brand" id="filter-profitability"><option value="">All statuses</option><option>Profitable</option><option>Operating at a loss</option><option>Pre-revenue</option></select></div>
+              <div class="filter-group"><label for="filter-revenue">Revenue information</label><select class="form-select form-control-brand" id="filter-revenue"><option value="">Any availability</option><option value="available">Available</option><option value="missing">Not available</option></select></div>
+              <div class="filter-group"><label for="filter-min-funding">Minimum funding target <span>PKR</span></label><input class="form-control form-control-brand" id="filter-min-funding" type="number" min="0" inputmode="numeric" placeholder="No minimum"></div>
+              <div class="filter-group"><label for="filter-max-funding">Maximum funding target <span>PKR</span></label><input class="form-control form-control-brand" id="filter-max-funding" type="number" min="0" inputmode="numeric" placeholder="No maximum"></div>
+              <div class="filter-hint"><i class="bi bi-lightbulb" aria-hidden="true"></i><span>Filters combine to narrow the sample directory. Missing financial data is not treated as zero.</span></div>
+            </aside>
+            <div class="results-column">
+              <div class="results-heading"><div><h2 id="directory-title">Sample businesses</h2><p id="result-count" aria-live="polite">Loading directory…</p></div><div class="active-filter-label" id="active-filter-label"></div></div>
+              <div class="row g-4" id="business-grid" aria-live="polite"></div>
+              <div class="empty-state d-none" id="empty-results"><div class="empty-state-icon"><i class="bi bi-search" aria-hidden="true"></i></div><h3>No matching businesses</h3><p>Try adjusting your search or clearing one or more filters.</p><button class="btn btn-secondary-brand" type="button" id="empty-clear-filters">Clear filters</button></div>
+              <div class="loading-state" id="directory-error" hidden>Business sample data could not be loaded. Please reload the page.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><div class="container"><div class="footer-main"><div class="footer-brand"><a class="brand-lockup" href="index.html"><img src="assets/logos/elmirix-logo.png" alt="" class="brand-mark"><span class="brand-wordmark">ELMIRIX</span></a><p>Turning Ideas Into Thriving Businesses.</p></div><div class="footer-note"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Frontend demonstration only. Business and financial information is fictional or sample data and has not been independently verified.</span></div></div><div class="footer-bottom"><span>© <span data-current-year></span> Elmirix · University project demonstration</span><div class="footer-legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a></div></div></div></footer>
+    <div class="toast-region" id="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="js/data.js" defer></script><script src="js/main.js" defer></script><script src="js/explore.js" defer></script>
+  </body>
+</html>
