@@ -159,6 +159,13 @@ editor.addEventListener("submit", (event) => {
       locations: selectedValues("locations"),
       introduction: editor.elements.introduction.value.trim()
     };
+    const existingAccount = window.ElmirixDemo.findAccountByEmail(updates.email);
+    const currentAccount = window.ElmirixDemo.getSession();
+    if (existingAccount && existingAccount.id !== currentAccount?.accountId) {
+      showProfileMessage("That email is already used by another demo profile in this browser.", "error");
+      editor.elements.email.focus();
+      return;
+    }
     const min = updates.minInvestment === "" ? null : Number(updates.minInvestment);
     const max = updates.maxInvestment === "" ? null : Number(updates.maxInvestment);
     if (min !== null && max !== null && min > max) {
@@ -175,6 +182,6 @@ editor.addEventListener("submit", (event) => {
     showProfileMessage("Your demo profile changes were saved in this browser.");
     window.Elmirix.showToast("Demo profile saved locally. No credentials were stored.");
   } else {
-    showProfileMessage("Changes could not be saved. Check your browser's local storage settings.", "error");
+    showProfileMessage("Changes could not be saved. Check for an email already in use and confirm browser storage is available.", "error");
   }
 });

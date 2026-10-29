@@ -1,6 +1,18 @@
 "use strict";
 
-const SAVED_BUSINESSES_KEY = "elmirix-saved-businesses";
+function getSavedBusinessesKey() {
+  try {
+    const session = JSON.parse(window.sessionStorage.getItem("elmirix-demo-session") || "null");
+    if (session?.accountId && session.accountId !== "demo-investor") {
+      return `elmirix-saved-businesses:${session.accountId}`;
+    }
+  } catch (error) {
+    console.warn("Elmirix could not determine the current demo account for saved businesses.", error);
+  }
+  return "elmirix-saved-businesses";
+}
+
+const SAVED_BUSINESSES_KEY = getSavedBusinessesKey();
 let savedBusinessIds = [];
 
 try {
