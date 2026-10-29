@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#081426"><meta name="description" content="Manage sample financial records and funding requests in the Elmirix frontend demonstration.">
+    <title>Financial Tools | Elmirix</title><link rel="icon" type="image/png" href="assets/logos/elmirix-logo.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"><link href="css/style.css" rel="stylesheet"><link href="css/responsive.css" rel="stylesheet"><link href="css/dashboard.css" rel="stylesheet">
+  </head>
+  <body class="dashboard-body" id="top"><a class="skip-link" href="#dashboard-main">Skip to financial tools</a>
+    <div class="dashboard-shell">
+      <aside class="dashboard-sidebar" id="dashboard-sidebar" aria-label="Business owner navigation">
+        <a class="dashboard-brand" href="index.html" aria-label="Elmirix home"><img src="assets/logos/elmirix-logo.png" alt=""><span>ELMIRIX</span></a>
+        <div class="sidebar-profile"><span class="sidebar-avatar">O</span><div><strong data-demo-name>Demo Business Owner</strong><small>Business Owner</small></div></div>
+        <p class="sidebar-label">WORKSPACE</p>
+        <nav class="sidebar-nav"><a class="sidebar-link" href="owner-dashboard.html"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Overview</a><a class="sidebar-link" href="owner-profile.html"><i class="bi bi-building" aria-hidden="true"></i>Business profile</a><a class="sidebar-link active" aria-current="page" href="financial-tools.html"><i class="bi bi-journal-text" aria-hidden="true"></i>Financial tools</a><a class="sidebar-link" href="business-details.html?id=greenharvest"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Public preview</a><a class="sidebar-link" href="explore.html"><i class="bi bi-compass" aria-hidden="true"></i>Explore website</a></nav>
+        <div class="sidebar-foot"><span class="sidebar-role-tag"><i class="bi bi-person-workspace" aria-hidden="true"></i> Owner demo</span><a href="index.html"><i class="bi bi-house" aria-hidden="true"></i> Public website</a></div>
+      </aside>
+      <div class="dashboard-main">
+        <header class="dashboard-topbar"><button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open dashboard navigation" aria-expanded="false"><i class="bi bi-list" aria-hidden="true"></i></button><div class="topbar-crumb"><a href="owner-dashboard.html">Workspace</a><i class="bi bi-chevron-right" aria-hidden="true"></i><strong>Financial tools</strong></div><div class="topbar-actions"><span class="topbar-demo"><i class="bi bi-info-circle" aria-hidden="true"></i> Demo mode</span><div class="dropdown"><button class="profile-menu-button" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="mini-avatar">O</span><span class="profile-menu-name" data-demo-name>Demo Business Owner</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button><ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"><li><span class="dropdown-item-text" data-demo-email>owner@elmirix.example</span></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="owner-profile.html">Edit business profile</a></li><li><button class="dropdown-item" type="button" data-logout>Exit demo session</button></li></ul></div></div></header>
+        <main class="dashboard-content financial-tools-page" id="dashboard-main" data-financial-tools>
+          <div class="dashboard-welcome"><div><p class="eyebrow">BUSINESS OWNER WORKSPACE</p><h1>Financial tools.</h1><p>Keep a simple demo ledger and organize illustrative funding requests.</p></div><a class="btn btn-secondary-brand" href="owner-dashboard.html"><i class="bi bi-arrow-left me-1" aria-hidden="true"></i> Dashboard</a></div>
+          <div class="demo-banner"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Frontend demo only. Entries stay in this browser; they are not verified accounting records, offers, or live fundraising requests. Do not enter sensitive information.</span></div>
+          <div class="profile-message financial-tools-message" id="financial-tools-message" role="status" aria-live="polite" hidden></div>
+          <section class="financial-summary-grid" aria-label="Demo ledger summary">
+            <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></span><span class="dashboard-stat-label">Recorded income</span><strong data-total-income>Rs 0</strong><small data-income-count>0 demo entries</small></article>
+            <article class="dashboard-stat"><span class="dashboard-stat-icon burgundy"><i class="bi bi-receipt" aria-hidden="true"></i></span><span class="dashboard-stat-label">Recorded expenses</span><strong data-total-expenses>Rs 0</strong><small data-expense-count>0 demo entries</small></article>
+            <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-calculator" aria-hidden="true"></i></span><span class="dashboard-stat-label">Demo net</span><strong data-total-net>Rs 0</strong><small>Recorded income less expenses</small></article>
+          </section>
+          <div class="financial-tools-grid">
+            <section class="dashboard-panel financial-form-panel">
+              <div class="dashboard-panel-heading"><div><p class="eyebrow">LEDGER</p><h2 id="record-form-heading">Add a financial record</h2></div><i class="bi bi-journal-plus panel-icon" aria-hidden="true"></i></div>
+              <form id="financial-record-form" class="financial-tool-form" novalidate>
+                <input type="hidden" name="recordId">
+                <div class="row g-3">
+                  <div class="col-sm-6"><label class="form-label" for="record-type">Record type</label><select class="form-select form-control-brand" id="record-type" name="type" required><option value="income">Income</option><option value="expense">Expense</option></select><div class="invalid-feedback">Choose income or expense.</div></div>
+                  <div class="col-sm-6"><label class="form-label" for="record-category">Category</label><select class="form-select form-control-brand" id="record-category" name="category" required><option value="Sales">Sales</option><option value="Services">Services</option><option value="Grant">Grant</option><option value="Investment">Investment</option><option value="Payroll">Payroll</option><option value="Rent">Rent</option><option value="Supplies">Supplies</option><option value="Marketing">Marketing</option><option value="Travel">Travel</option><option value="Other">Other</option></select><div class="invalid-feedback">Choose a category.</div></div>
+                  <div class="col-12"><label class="form-label" for="record-description">Description</label><input class="form-control form-control-brand" id="record-description" name="description" required minlength="2" maxlength="100"><div class="invalid-feedback">Enter a short description.</div></div>
+                  <div class="col-sm-6"><label class="form-label" for="record-amount">Amount (PKR)</label><input class="form-control form-control-brand" id="record-amount" name="amount" type="number" min="1" max="999999999999" step="1" required><div class="invalid-feedback">Enter an amount greater than zero.</div></div>
+                  <div class="col-sm-6"><label class="form-label" for="record-date">Date</label><input class="form-control form-control-brand" id="record-date" name="date" type="date" required><div class="invalid-feedback">Choose a valid date.</div></div>
+                  <div class="col-12"><label class="form-label" for="record-notes">Notes <span class="optional-label">optional</span></label><textarea class="form-control form-control-brand" id="record-notes" name="notes" rows="2" maxlength="240"></textarea></div>
+                </div>
+                <div class="financial-form-actions"><button class="btn btn-primary-brand" type="submit" data-record-submit>Add record</button><button class="btn btn-secondary-brand" type="button" data-record-cancel hidden>Cancel edit</button></div>
+              </form>
+            </section>
+            <section class="dashboard-panel financial-list-panel">
+              <div class="dashboard-panel-heading"><div><p class="eyebrow">LOCAL DEMO DATA</p><h2>Financial records</h2></div><span class="panel-tag" data-record-count>0 entries</span></div>
+              <div class="financial-record-list" id="financial-record-list"></div>
+            </section>
+            <section class="dashboard-panel financial-form-panel">
+              <div class="dashboard-panel-heading"><div><p class="eyebrow">FUNDING PLANNER</p><h2 id="funding-form-heading">Create a funding request</h2></div><i class="bi bi-bullseye panel-icon" aria-hidden="true"></i></div>
+              <form id="funding-request-form" class="financial-tool-form" novalidate>
+                <input type="hidden" name="requestId">
+                <div class="row g-3">
+                  <div class="col-12"><label class="form-label" for="request-title">Request title</label><input class="form-control form-control-brand" id="request-title" name="title" required minlength="3" maxlength="80"><div class="invalid-feedback">Enter a title between 3 and 80 characters.</div></div>
+                  <div class="col-sm-6"><label class="form-label" for="request-amount">Target amount (PKR)</label><input class="form-control form-control-brand" id="request-amount" name="amount" type="number" min="1" max="999999999999" step="1" required><div class="invalid-feedback">Enter an amount greater than zero.</div></div>
+                  <div class="col-sm-6"><label class="form-label" for="request-status">Demo status</label><select class="form-select form-control-brand" id="request-status" name="status" required><option>Draft</option><option>Seeking interest</option><option>Paused</option><option>Closed</option></select></div>
+                  <div class="col-12"><label class="form-label" for="request-purpose">Purpose</label><textarea class="form-control form-control-brand" id="request-purpose" name="purpose" rows="2" required minlength="10" maxlength="240"></textarea><div class="invalid-feedback">Describe the purpose in at least 10 characters.</div></div>
+                  <div class="col-12"><label class="form-label" for="request-use-of-funds">Illustrative use of funds <span class="optional-label">optional</span></label><textarea class="form-control form-control-brand" id="request-use-of-funds" name="useOfFunds" rows="2" maxlength="300"></textarea></div>
+                </div>
+                <div class="financial-form-actions"><button class="btn btn-primary-brand" type="submit" data-request-submit>Create demo request</button><button class="btn btn-secondary-brand" type="button" data-request-cancel hidden>Cancel edit</button></div>
+              </form>
+            </section>
+            <section class="dashboard-panel financial-list-panel">
+              <div class="dashboard-panel-heading"><div><p class="eyebrow">NO LIVE FUNDRAISING</p><h2>Funding requests</h2></div><span class="panel-tag" data-request-count>0 requests</span></div>
+              <div class="funding-request-list" id="funding-request-list"></div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="sidebar-overlay" data-sidebar-toggle aria-hidden="true"></div><div class="toast-region" id="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="js/data.js" defer></script><script src="js/main.js" defer></script><script src="js/demo-state.js" defer></script><script src="js/financial-tools.js" defer></script>
+  </body>
+</html>

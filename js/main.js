@@ -119,6 +119,26 @@ if (navCollapse) {
   });
 }
 
+const ownerSidebar = document.querySelector('#dashboard-sidebar[aria-label="Business owner navigation"]');
+if (ownerSidebar) {
+  const sidebarNav = ownerSidebar.querySelector(".sidebar-nav");
+  if (sidebarNav && !sidebarNav.querySelector('a[href="financial-tools.html"]')) {
+    const link = document.createElement("a");
+    const icon = document.createElement("i");
+    link.className = "sidebar-link";
+    link.href = "financial-tools.html";
+    icon.className = "bi bi-journal-text";
+    icon.setAttribute("aria-hidden", "true");
+    link.append(icon, document.createTextNode("Financial tools"));
+    if (window.location.pathname.endsWith("/financial-tools.html")) {
+      link.classList.add("active");
+      link.setAttribute("aria-current", "page");
+    }
+    const profileLink = sidebarNav.querySelector('a[href="owner-profile.html"]');
+    sidebarNav.insertBefore(link, profileLink?.nextSibling || null);
+  }
+}
+
 const contactForm = document.querySelector("#contact-form");
 if (contactForm) {
   contactForm.querySelectorAll("input, textarea").forEach((field) => {

@@ -4,6 +4,8 @@
   const PROFILE_KEY = "elmirix-demo-profiles";
   const SESSION_KEY = "elmirix-demo-session";
   const VIEWED_KEY = "elmirix-recently-viewed";
+  const FINANCIAL_RECORDS_KEY = "elmirix-financial-records";
+  const FUNDING_REQUESTS_KEY = "elmirix-funding-requests";
   const businesses = Array.isArray(window.ELMIRIX_BUSINESSES) ? window.ELMIRIX_BUSINESSES : [];
   const baseBusiness = businesses.find((business) => business.id === "greenharvest") || businesses[0];
   const defaultProfiles = {
@@ -149,6 +151,60 @@
     }
   }
 
+  function getStoredList(key) {
+    const value = readJson(window.localStorage, key, []);
+    return Array.isArray(value) ? value.filter((item) => item && typeof item === "object" && !Array.isArray(item)) : [];
+  }
+
+  function saveStoredList(key, value, eventName) {
+    if (!Array.isArray(value)) {
+      throw new TypeError("Demo records must be saved as a list.");
+    }
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+      window.dispatchEvent(new CustomEvent(eventName));
+      return true;
+    } catch (error) {
+      console.error(`Elmirix could not save demo data for "${key}".`, error);
+      return false;
+    }
+  }
+
+  function getFinancialRecords() {
+    return getStoredList(FINANCIAL_RECORDS_KEY).filter((record) =>
+      typeof record.id === "string"
+      && (record.type === "income" || record.type === "expense")
+      && typeof record.description === "string"
+      && typeof record.category === "string"
+      && typeof record.date === "string"
+      && Number.isFinite(record.amount)
+      && record.amount > 0
+      && typeof record.notes === "string"
+    );
+  }
+
+  function saveFinancialRecords(records) {
+    return saveStoredList(FINANCIAL_RECORDS_KEY, records, "elmirix:financial-records-changed");
+  }
+
+  function getFundingRequests() {
+    const statuses = ["Draft", "Seeking interest", "Paused", "Closed"];
+    return getStoredList(FUNDING_REQUESTS_KEY).filter((request) =>
+      typeof request.id === "string"
+      && typeof request.title === "string"
+      && Number.isFinite(request.amount)
+      && request.amount > 0
+      && typeof request.purpose === "string"
+      && typeof request.useOfFunds === "string"
+      && statuses.includes(request.status)
+      && typeof request.createdAt === "string"
+    );
+  }
+
+  function saveFundingRequests(requests) {
+    return saveStoredList(FUNDING_REQUESTS_KEY, requests, "elmirix:funding-requests-changed");
+  }
+
   window.ElmirixDemo = {
     getProfiles,
     saveProfiles,
@@ -159,6 +215,10 @@
     getBusiness,
     getSavedIds,
     getViewedIds,
-    recordViewed
+    recordViewed,
+    getFinancialRecords,
+    saveFinancialRecords,
+    getFundingRequests,
+    saveFundingRequests
   };
 })();
