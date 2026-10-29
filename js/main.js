@@ -67,6 +67,10 @@ function toggleBookmark(button) {
 }
 
 window.Elmirix = {
+  escapeHTML(value) {
+    const replacements = { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" };
+    return String(value ?? "").replace(/[&<>"']/g, (character) => replacements[character]);
+  },
   formatCurrency(amount) {
     return new Intl.NumberFormat("en-PK", {
       style: "currency",
@@ -89,6 +93,23 @@ document.addEventListener("click", (event) => {
 
 const navCollapse = document.querySelector("#main-navigation");
 if (navCollapse) {
+  const navList = navCollapse.querySelector(".navbar-nav");
+  const navCta = navList?.querySelector(".btn")?.closest(".nav-item");
+  [
+    { href: "login.html", label: "Login" },
+    { href: "register.html", label: "Register" }
+  ].forEach(({ href, label }) => {
+    if (!navList || navList.querySelector(`a[href="${href}"]`)) return;
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    item.className = "nav-item";
+    link.className = "nav-link auth-nav-link";
+    link.href = href;
+    link.textContent = label;
+    item.append(link);
+    navList.insertBefore(item, navCta || null);
+  });
+
   navCollapse.querySelectorAll(".nav-link").forEach((link) => {
     link.addEventListener("click", () => {
       if (window.matchMedia("(max-width: 991.98px)").matches && window.bootstrap) {

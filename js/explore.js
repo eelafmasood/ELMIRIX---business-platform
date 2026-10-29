@@ -14,24 +14,26 @@ const resultCount = document.querySelector("#result-count");
 const emptyResults = document.querySelector("#empty-results");
 const errorState = document.querySelector("#directory-error");
 const filterInputs = [searchInput, industryFilter, locationFilter, stageFilter, profitabilityFilter, revenueFilter, minFundingFilter, maxFundingFilter, sortSelect];
+const escapeHTML = window.Elmirix.escapeHTML;
 
 function directoryCard(business) {
+  const image = business.imageDataUrl || business.image;
   const revenue = business.revenue === null ? "Not reported" : window.Elmirix.formatCurrency(business.revenue);
   const stateClass = business.profitability === "Profitable" ? "status-positive" : business.profitability === "Operating at a loss" ? "status-negative" : "status-neutral";
   const saved = window.Elmirix.isSaved(business.id);
   return `<div class="col-md-6 col-xl-4">
     <article class="business-card">
-      <a class="business-image ${business.color}" href="business-details.html?id=${encodeURIComponent(business.id)}" aria-label="View ${business.name} profile">
-        <img src="${business.image}" alt="" loading="lazy">
-        <span class="image-industry">${business.industry}</span><span class="image-stage">${business.stage}</span>
+      <a class="business-image ${escapeHTML(business.color)}" href="business-details.html?id=${encodeURIComponent(business.id)}" aria-label="View ${escapeHTML(business.name)} profile">
+        <img src="${escapeHTML(image)}" alt="" loading="lazy">
+        <span class="image-industry">${escapeHTML(business.industry)}</span><span class="image-stage">${escapeHTML(business.stage)}</span>
       </a>
       <div class="business-card-body">
-        <div class="business-card-title"><div><h3><a href="business-details.html?id=${encodeURIComponent(business.id)}">${business.name}</a></h3><p><i class="bi bi-geo-alt" aria-hidden="true"></i> ${business.location}</p></div>
-          <button class="icon-button bookmark-button" type="button" data-bookmark="${business.id}" data-bookmark-name="${business.name}" aria-label="${saved ? "Remove " + business.name + " from saved businesses" : "Save " + business.name}" aria-pressed="${saved}"><i class="bi ${saved ? "bi-bookmark-fill" : "bi-bookmark"}" aria-hidden="true"></i></button>
+        <div class="business-card-title"><div><h3><a href="business-details.html?id=${encodeURIComponent(business.id)}">${escapeHTML(business.name)}</a></h3><p><i class="bi bi-geo-alt" aria-hidden="true"></i> ${escapeHTML(business.location)}</p></div>
+          <button class="icon-button bookmark-button" type="button" data-bookmark="${escapeHTML(business.id)}" data-bookmark-name="${escapeHTML(business.name)}" aria-label="${saved ? "Remove " + escapeHTML(business.name) + " from saved businesses" : "Save " + escapeHTML(business.name)}" aria-pressed="${saved}"><i class="bi ${saved ? "bi-bookmark-fill" : "bi-bookmark"}" aria-hidden="true"></i></button>
         </div>
-        <p class="business-description">${business.description}</p>
+        <p class="business-description">${escapeHTML(business.shortDescription || business.description)}</p>
         <div class="business-financials"><div><span>Funding goal</span><strong>${window.Elmirix.formatCurrency(business.fundingTarget)}</strong></div><div><span>Annual revenue</span><strong>${revenue}</strong></div></div>
-        <div class="business-card-footer"><span class="profitability ${stateClass}"><span class="profit-dot"></span>${business.profitability}</span><a class="card-link" href="business-details.html?id=${encodeURIComponent(business.id)}">View business <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div>
+        <div class="business-card-footer"><span class="profitability ${stateClass}"><span class="profit-dot"></span>${escapeHTML(business.profitability)}</span><a class="card-link" href="business-details.html?id=${encodeURIComponent(business.id)}">View business <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div>
       </div>
     </article>
   </div>`;
@@ -56,7 +58,7 @@ function filterBusinesses() {
   const query = searchInput.value.trim().toLocaleLowerCase();
   const minFunding = minFundingFilter.value === "" ? null : Number(minFundingFilter.value);
   const maxFunding = maxFundingFilter.value === "" ? null : Number(maxFundingFilter.value);
-  let businesses = window.ELMIRIX_BUSINESSES.filter((business) => {
+  let businesses = window.ELMIRIX_BUSINESSES.map((business) => window.ElmirixDemo.getBusiness(business.id)).filter((business) => {
     const text = [business.name, business.industry, business.location, business.description, business.products].join(" ").toLocaleLowerCase();
     return (!query || text.includes(query))
       && (!industryFilter.value || business.industry === industryFilter.value)
