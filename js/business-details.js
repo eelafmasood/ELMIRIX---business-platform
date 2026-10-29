@@ -48,7 +48,7 @@ function renderDetail(item) {
       </div>
       <div class="detail-bottom-cta"><div><h2>Curious about this idea?</h2><p>Use the demo inquiry form to preview how an introduction could work.</p></div><button class="btn btn-primary-brand" type="button" data-inquiry>Start a conversation <i class="bi bi-arrow-up-right ms-1" aria-hidden="true"></i></button></div>
     </div>
-    <dialog class="preview-dialog inquiry-dialog" id="inquiry-dialog" aria-labelledby="inquiry-title"><div class="dialog-content"><button class="icon-button dialog-close" type="button" aria-label="Close dialog" data-close-dialog><i class="bi bi-x-lg" aria-hidden="true"></i></button><p class="eyebrow">DEMO INQUIRY</p><h2 id="inquiry-title">Connect with ${escapeHTML(item.name)}</h2><p>This is a form preview only. Nothing will be sent or stored.</p><form id="inquiry-form" novalidate><div class="mb-3"><label class="form-label" for="inquiry-email">Your email</label><input class="form-control form-control-brand" id="inquiry-email" type="email" placeholder="you@example.com" required><div class="invalid-feedback">Enter a valid email address.</div></div><div class="mb-3"><label class="form-label" for="inquiry-message">Message</label><textarea class="form-control form-control-brand" id="inquiry-message" rows="4" minlength="10" placeholder="Share what you would like to discuss…" required></textarea><div class="invalid-feedback">Write at least 10 characters.</div></div><button class="btn btn-primary-brand w-100" type="submit">Preview inquiry <i class="bi bi-send ms-1" aria-hidden="true"></i></button></form></div></dialog>`;
+    <dialog class="preview-dialog inquiry-dialog" id="inquiry-dialog" aria-labelledby="inquiry-title"><div class="dialog-content"><button class="icon-button dialog-close" type="button" aria-label="Close dialog" data-close-dialog><i class="bi bi-x-lg" aria-hidden="true"></i></button><p class="eyebrow">PHASE 5 · DEMO INQUIRY</p><h2 id="inquiry-title">Connect with ${escapeHTML(item.name)}</h2><p>This message is saved only in this browser for the owner and investor dashboard demo. It is not sent to anyone.</p><form id="inquiry-form" novalidate><div class="mb-3"><label class="form-label" for="inquiry-name">Your name</label><input class="form-control form-control-brand" id="inquiry-name" name="name" type="text" minlength="2" maxlength="80" autocomplete="name" required><div class="invalid-feedback">Enter your name.</div></div><div class="mb-3"><label class="form-label" for="inquiry-email">Your email</label><input class="form-control form-control-brand" id="inquiry-email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required><div class="invalid-feedback">Enter a valid email address.</div></div><div class="mb-3"><label class="form-label" for="inquiry-message">Message</label><textarea class="form-control form-control-brand" id="inquiry-message" name="message" rows="4" minlength="10" maxlength="1000" placeholder="Share what you would like to discuss…" required></textarea><div class="invalid-feedback">Write at least 10 characters.</div></div><button class="btn btn-primary-brand w-100" type="submit">Save demo inquiry <i class="bi bi-send ms-1" aria-hidden="true"></i></button></form></div></dialog>`;
 
   if (hasFinancials && window.Chart) {
     const chartContext = document.querySelector("#financial-chart").getContext("2d");
@@ -97,18 +97,49 @@ function renderDetail(item) {
   }
 
   const inquiryDialog = document.querySelector("#inquiry-dialog");
+  const inquiryForm = document.querySelector("#inquiry-form");
+  const investorProfile = window.ElmirixDemo.getProfiles().investor;
+  const activeSession = window.ElmirixDemo.getSession();
+  const inquirySender = activeSession?.role === "investor" ? activeSession : investorProfile;
+  document.querySelector("#inquiry-name").value = inquirySender.name;
+  document.querySelector("#inquiry-email").value = inquirySender.email;
   document.querySelectorAll("[data-inquiry]").forEach((button) => button.addEventListener("click", () => inquiryDialog.showModal()));
   inquiryDialog.querySelector("[data-close-dialog]").addEventListener("click", () => inquiryDialog.close());
   inquiryDialog.addEventListener("click", (event) => {
     if (event.target === inquiryDialog) inquiryDialog.close();
   });
-  const inquiryForm = document.querySelector("#inquiry-form");
+  inquiryForm.addEventListener("input", (event) => {
+    if (event.target.matches("input, textarea") && event.target.checkValidity()) {
+      event.target.classList.remove("is-invalid");
+    }
+  });
+  inquiryForm.addEventListener("invalid", (event) => {
+    if (event.target.matches("input, textarea")) event.target.classList.add("is-invalid");
+  }, true);
   inquiryForm.addEventListener("submit", (event) => {
     event.preventDefault();
     inquiryForm.classList.add("was-validated");
-    if (!inquiryForm.checkValidity()) return;
+    if (!inquiryForm.checkValidity()) {
+      inquiryForm.querySelector(":invalid")?.focus();
+      return;
+    }
+    const inquiries = window.ElmirixDemo.getInquiries();
+    const inquiry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      businessId: item.id,
+      businessName: item.name,
+      investorName: inquiryForm.elements.name.value.trim(),
+      investorEmail: inquiryForm.elements.email.value.trim(),
+      message: inquiryForm.elements.message.value.trim(),
+      status: "New",
+      createdAt: new Date().toISOString()
+    };
+    if (!window.ElmirixDemo.saveInquiries([inquiry, ...inquiries])) {
+      window.Elmirix.showToast("The inquiry could not be saved. Check this browser's local storage settings.");
+      return;
+    }
     inquiryDialog.close();
-    window.Elmirix.showToast("Inquiry preview validated. It was not sent or stored.");
+    window.Elmirix.showToast("Demo inquiry saved locally. Nothing was sent.");
     inquiryForm.reset();
     inquiryForm.classList.remove("was-validated");
   });

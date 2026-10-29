@@ -6,6 +6,7 @@
   const VIEWED_KEY = "elmirix-recently-viewed";
   const FINANCIAL_RECORDS_KEY = "elmirix-financial-records";
   const FUNDING_REQUESTS_KEY = "elmirix-funding-requests";
+  const INQUIRIES_KEY = "elmirix-demo-inquiries";
   const businesses = Array.isArray(window.ELMIRIX_BUSINESSES) ? window.ELMIRIX_BUSINESSES : [];
   const baseBusiness = businesses.find((business) => business.id === "greenharvest") || businesses[0];
   const defaultProfiles = {
@@ -205,6 +206,52 @@
     return saveStoredList(FUNDING_REQUESTS_KEY, requests, "elmirix:funding-requests-changed");
   }
 
+  function getInquiries() {
+    const statuses = ["New", "In review", "Closed"];
+    return getStoredList(INQUIRIES_KEY).filter((inquiry) =>
+      typeof inquiry.id === "string"
+      && businesses.some((business) => business.id === inquiry.businessId)
+      && typeof inquiry.businessName === "string"
+      && typeof inquiry.investorName === "string"
+      && typeof inquiry.investorEmail === "string"
+      && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inquiry.investorEmail)
+      && typeof inquiry.message === "string"
+      && typeof inquiry.createdAt === "string"
+      && !Number.isNaN(Date.parse(inquiry.createdAt))
+      && statuses.includes(inquiry.status)
+    );
+  }
+
+  function saveInquiries(inquiries) {
+    if (!Array.isArray(inquiries) || inquiries.some((inquiry) =>
+      !inquiry
+      || typeof inquiry.id !== "string"
+      || !businesses.some((business) => business.id === inquiry.businessId)
+      || typeof inquiry.businessName !== "string"
+      || typeof inquiry.investorName !== "string"
+      || typeof inquiry.investorEmail !== "string"
+      || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inquiry.investorEmail)
+      || typeof inquiry.message !== "string"
+      || typeof inquiry.createdAt !== "string"
+      || Number.isNaN(Date.parse(inquiry.createdAt))
+      || !["New", "In review", "Closed"].includes(inquiry.status)
+    )) {
+      throw new TypeError("Inquiry data is invalid.");
+    }
+    return saveStoredList(INQUIRIES_KEY, inquiries, "elmirix:inquiries-changed");
+  }
+
+  function updateInquiryStatus(id, status) {
+    if (!["New", "In review", "Closed"].includes(status)) {
+      throw new TypeError("Inquiry status is invalid.");
+    }
+    const inquiries = getInquiries();
+    const index = inquiries.findIndex((inquiry) => inquiry.id === id);
+    if (index < 0) return false;
+    inquiries[index] = { ...inquiries[index], status };
+    return saveInquiries(inquiries);
+  }
+
   window.ElmirixDemo = {
     getProfiles,
     saveProfiles,
@@ -219,6 +266,9 @@
     getFinancialRecords,
     saveFinancialRecords,
     getFundingRequests,
-    saveFundingRequests
+    saveFundingRequests,
+    getInquiries,
+    saveInquiries,
+    updateInquiryStatus
   };
 })();

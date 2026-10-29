@@ -51,6 +51,28 @@ function businessCardMarkup(business, action = "") {
   return `<a class="dashboard-business-card" href="business-details.html?id=${encodeURIComponent(business.id)}"><span class="dashboard-business-icon ${escapeHTML(business.color)}"><img src="${escapeHTML(business.imageDataUrl || business.image)}" alt=""></span><span class="dashboard-business-copy"><strong>${escapeHTML(business.name)}</strong><small>${escapeHTML(business.industry)} · ${escapeHTML(business.stage)}</small></span><i class="bi ${action || "bi-arrow-up-right"}" aria-hidden="true"></i></a>`;
 }
 
+function inquiryDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Date unavailable" : new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(date);
+}
+
+function ownerInquiryMarkup(inquiry) {
+  return `<article class="inquiry-card">
+    <div class="inquiry-card-heading"><div><span class="inquiry-status-chip">${escapeHTML(inquiry.status)}</span><h3>${escapeHTML(inquiry.businessName)}</h3></div><time datetime="${escapeHTML(inquiry.createdAt)}">${escapeHTML(inquiryDate(inquiry.createdAt))}</time></div>
+    <p class="inquiry-sender"><strong>${escapeHTML(inquiry.investorName)}</strong> · ${escapeHTML(inquiry.investorEmail)}</p>
+    <p class="inquiry-message">${escapeHTML(inquiry.message)}</p>
+    <label class="inquiry-status-control"><span>Demo status</span><select class="form-select form-control-brand" data-inquiry-status="${escapeHTML(inquiry.id)}" aria-label="Update status for inquiry from ${escapeHTML(inquiry.investorName)}"><option${inquiry.status === "New" ? " selected" : ""}>New</option><option${inquiry.status === "In review" ? " selected" : ""}>In review</option><option${inquiry.status === "Closed" ? " selected" : ""}>Closed</option></select></label>
+  </article>`;
+}
+
+function investorInquiryMarkup(inquiry) {
+  return `<article class="inquiry-card">
+    <div class="inquiry-card-heading"><div><span class="inquiry-status-chip">${escapeHTML(inquiry.status)}</span><h3>${escapeHTML(inquiry.businessName)}</h3></div><time datetime="${escapeHTML(inquiry.createdAt)}">${escapeHTML(inquiryDate(inquiry.createdAt))}</time></div>
+    <p class="inquiry-message">${escapeHTML(inquiry.message)}</p>
+    <p class="dashboard-muted">Your message is saved in this browser only. The business has not been notified.</p>
+  </article>`;
+}
+
 function renderOwnerDashboard() {
   const business = window.ElmirixDemo.getBusiness(profile.business?.id || "greenharvest");
   if (!business) {
@@ -65,6 +87,10 @@ function renderOwnerDashboard() {
   const recordedIncome = financialRecords.filter((record) => record.type === "income").reduce((total, record) => total + record.amount, 0);
   const recordedExpenses = financialRecords.filter((record) => record.type === "expense").reduce((total, record) => total + record.amount, 0);
   const activeRequests = fundingRequests.filter((request) => request.status !== "Closed");
+  const ownerInquiries = window.ElmirixDemo.getInquiries()
+    .filter((inquiry) => inquiry.businessId === business.id)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const openInquiries = ownerInquiries.filter((inquiry) => inquiry.status !== "Closed").length;
   const completionFields = ["name", "industry", "location", "shortDescription", "mission", "vision", "products", "targetMarket"];
   const completion = Math.round(completionFields.filter((field) => Boolean(business[field])).length / completionFields.length * 100);
   dashboardRoot.innerHTML = `
@@ -72,7 +98,7 @@ function renderOwnerDashboard() {
     <div class="demo-banner"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Owner dashboard demo · Metrics are sample or zero-state values, not live platform activity.</span></div>
     <div class="dashboard-stat-grid">
       <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-eye" aria-hidden="true"></i></span><span class="dashboard-stat-label">Profile views</span><strong>—</strong><small>No view tracking in this stage</small></article>
-      <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><span class="dashboard-stat-label">Inquiries</span><strong>0</strong><small>Inquiry features arrive in Phase 5</small></article>
+      <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><span class="dashboard-stat-label">Demo inquiries</span><strong>${ownerInquiries.length}</strong><small>${openInquiries} open · saved in this browser</small></article>
       <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-cash-stack" aria-hidden="true"></i></span><span class="dashboard-stat-label">Revenue · ${escapeHTML(business.reportingPeriod || "sample period")}</span><strong>${hasFinancials ? window.Elmirix.formatCurrency(business.revenue) : "N/A"}</strong><small>Sample reported revenue</small></article>
       <article class="dashboard-stat"><span class="dashboard-stat-icon burgundy"><i class="bi bi-receipt" aria-hidden="true"></i></span><span class="dashboard-stat-label">Total expenses</span><strong>${hasFinancials ? window.Elmirix.formatCurrency(expenses) : "N/A"}</strong><small>Operating + other expenses</small></article>
       <article class="dashboard-stat"><span class="dashboard-stat-icon ${net !== null && net < 0 ? "warning" : ""}"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></span><span class="dashboard-stat-label">Net ${net !== null && net < 0 ? "loss" : "profit"}</span><strong>${hasFinancials ? window.Elmirix.formatCurrency(Math.abs(net)) : "N/A"}</strong><small>Revenue + other income − expenses</small></article>
@@ -84,7 +110,7 @@ function renderOwnerDashboard() {
       <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">SAMPLE LISTING</p><h2>Funding status</h2></div><span class="status-chip">${escapeHTML(business.fundingStatus)}</span></div><p class="dashboard-muted">Your sample funding goal is shown for demonstration. No funds are raised or processed.</p><div class="funding-goal-row"><span>Goal</span><strong>${window.Elmirix.formatCurrency(business.fundingTarget)}</strong></div><a class="text-action" href="business-details.html?id=${encodeURIComponent(business.id)}">Preview public listing <i class="bi bi-arrow-right" aria-hidden="true"></i></a></section>
       <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">PHASE 4 · LOCAL DEMO LEDGER</p><h2>Financial records</h2></div><span class="panel-tag">${financialRecords.length} ${financialRecords.length === 1 ? "entry" : "entries"}</span></div><div class="funding-goal-row"><span>Recorded income</span><strong>${window.Elmirix.formatCurrency(recordedIncome)}</strong></div><div class="funding-goal-row"><span>Recorded expenses</span><strong>${window.Elmirix.formatCurrency(recordedExpenses)}</strong></div><p class="dashboard-muted">These user-entered demo records are separate from the sample figures above.</p><a class="text-action" href="financial-tools.html#financial-record-form">Manage financial records <i class="bi bi-arrow-right" aria-hidden="true"></i></a></section>
       <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">PHASE 4 · FUNDING PLANNER</p><h2>Funding requests</h2></div><span class="panel-tag">${activeRequests.length} active</span></div><p class="dashboard-muted">${fundingRequests.length ? `${fundingRequests.length} illustrative ${fundingRequests.length === 1 ? "request" : "requests"} saved in this browser.` : "No demo funding requests yet."} Nothing is published or sent to investors.</p><a class="text-action" href="financial-tools.html#funding-request-form">Manage funding requests <i class="bi bi-arrow-right" aria-hidden="true"></i></a></section>
-      <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">INQUIRY ACTIVITY</p><h2>Recent inquiries</h2></div><i class="bi bi-chat-square panel-icon" aria-hidden="true"></i></div><div class="dashboard-empty-inline"><i class="bi bi-inbox" aria-hidden="true"></i><span>No demo inquiries yet. Inquiry management is planned for Phase 5.</span></div></section>
+      <section class="dashboard-panel inquiry-dashboard-panel" id="owner-inquiries"><div class="dashboard-panel-heading"><div><p class="eyebrow">PHASE 5 · LOCAL DEMO INQUIRIES</p><h2>Business inquiries</h2></div><span class="panel-tag">${ownerInquiries.length} ${ownerInquiries.length === 1 ? "inquiry" : "inquiries"}</span></div><p class="dashboard-muted">Update an inquiry status for the investor dashboard demo. These messages are not delivered to anyone.</p><div class="inquiry-list">${ownerInquiries.length ? ownerInquiries.map(ownerInquiryMarkup).join("") : `<div class="dashboard-empty-inline"><i class="bi bi-inbox" aria-hidden="true"></i><span>No inquiries yet. Investors can submit a demo inquiry from the public business profile.</span></div>`}</div></section>
       <section class="dashboard-panel dashboard-actions-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">YOUR NEXT STEP</p><h2>Quick actions</h2></div></div><div class="dashboard-actions"><a href="owner-profile.html"><i class="bi bi-pencil-square" aria-hidden="true"></i><span>Edit business profile</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="business-details.html?id=${encodeURIComponent(business.id)}"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i><span>Preview public profile</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="financial-tools.html#financial-record-form"><i class="bi bi-journal-plus" aria-hidden="true"></i><span>Financial records</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="financial-tools.html#funding-request-form"><i class="bi bi-bullseye" aria-hidden="true"></i><span>Funding request tools</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></section>
     </div>`;
   if (hasFinancials && window.Chart) {
@@ -121,6 +147,11 @@ function renderInvestorDashboard() {
   const saved = window.ElmirixDemo.getSavedIds().map((id) => businesses.find((business) => business.id === id)).filter(Boolean);
   const viewed = window.ElmirixDemo.getViewedIds().map((id) => window.ElmirixDemo.getBusiness(id)).filter(Boolean);
   const investor = window.ElmirixDemo.getProfiles().investor;
+  const investorEmail = (session?.role === role ? session.email : investor.email).toLocaleLowerCase();
+  const investorInquiries = window.ElmirixDemo.getInquiries()
+    .filter((inquiry) => inquiry.investorEmail.toLocaleLowerCase() === investorEmail)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const activeInvestorInquiries = investorInquiries.filter((inquiry) => inquiry.status !== "Closed").length;
   const recommended = businesses.map((business) => window.ElmirixDemo.getBusiness(business.id))
     .filter((business) => (!investor.industries?.length || investor.industries.includes(business.industry))
       && (!investor.stages?.length || investor.stages.includes(business.stage))
@@ -137,16 +168,16 @@ function renderInvestorDashboard() {
     <div class="demo-banner"><i class="bi bi-info-circle" aria-hidden="true"></i><span>Investor dashboard demo · Recommendations use sample profile preferences; no real investor activity is represented.</span></div>
     <div class="dashboard-stat-grid investor-stats">
       <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-bookmark" aria-hidden="true"></i></span><span class="dashboard-stat-label">Saved businesses</span><strong>${saved.length}</strong><small>Saved in this browser</small></article>
-      <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><span class="dashboard-stat-label">Total inquiries</span><strong>0</strong><small>Inquiry tools arrive in Phase 5</small></article>
-      <article class="dashboard-stat"><span class="dashboard-stat-icon burgundy"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span><span class="dashboard-stat-label">Awaiting a response</span><strong>0</strong><small>No demo inquiries</small></article>
+      <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-chat-dots" aria-hidden="true"></i></span><span class="dashboard-stat-label">Demo inquiries</span><strong>${investorInquiries.length}</strong><small>Saved in this browser</small></article>
+      <article class="dashboard-stat"><span class="dashboard-stat-icon burgundy"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span><span class="dashboard-stat-label">Open inquiries</span><strong>${activeInvestorInquiries}</strong><small>Demo status tracking</small></article>
       <article class="dashboard-stat"><span class="dashboard-stat-icon"><i class="bi bi-clock-history" aria-hidden="true"></i></span><span class="dashboard-stat-label">Recently viewed</span><strong>${viewed.length}</strong><small>Profiles viewed in this browser</small></article>
     </div>
     <div class="dashboard-content-grid investor-dashboard-grid">
       <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">SAVED FOR LATER</p><h2>Saved businesses</h2></div><a class="text-action" href="explore.html">Browse all <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div><div class="dashboard-business-list">${showBusinesses(saved, "No saved businesses yet. Browse the directory and bookmark a profile.")}</div></section>
       <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">BASED ON YOUR PREFERENCES</p><h2>Suggested businesses</h2></div><span class="panel-tag">Demo suggestions</span></div><div class="dashboard-business-list">${showBusinesses(recommended, "No suggestions match your preferences. Update your investor profile.")}</div><p class="dashboard-muted">Suggestions use sample profile preferences—not artificial intelligence or real investor data.</p></section>
       <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">RECENTLY OPENED</p><h2>Recently viewed</h2></div></div><div class="dashboard-business-list">${showBusinesses(viewed, "Business profiles you open will appear here in this browser.")}</div></section>
-      <section class="dashboard-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">INQUIRY TRACKER</p><h2>Recent inquiries</h2></div></div><div class="dashboard-empty-inline"><i class="bi bi-chat-square-text" aria-hidden="true"></i><span>No demo inquiries yet. Inquiry tracking is planned for Phase 5.</span></div></section>
-      <section class="dashboard-panel dashboard-actions-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">YOUR WORKSPACE</p><h2>Quick actions</h2></div></div><div class="dashboard-actions"><a href="explore.html"><i class="bi bi-search" aria-hidden="true"></i><span>Explore businesses</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="investor-dashboard.html#saved-businesses" data-scroll-saved><i class="bi bi-bookmark" aria-hidden="true"></i><span>Review saved businesses</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="investor-profile.html"><i class="bi bi-person-gear" aria-hidden="true"></i><span>Edit investor profile</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><button type="button" data-coming-soon="Investor inquiry tracking will be added in Phase 5."><i class="bi bi-chat-left-text" aria-hidden="true"></i><span>Inquiry tracking</span><i class="bi bi-arrow-right" aria-hidden="true"></i></button></div></section>
+      <section class="dashboard-panel inquiry-dashboard-panel" id="investor-inquiries"><div class="dashboard-panel-heading"><div><p class="eyebrow">PHASE 5 · LOCAL DEMO TRACKER</p><h2>Your inquiries</h2></div><span class="panel-tag">${investorInquiries.length} ${investorInquiries.length === 1 ? "inquiry" : "inquiries"}</span></div><p class="dashboard-muted">Status changes appear here only when this demo is used in the same browser. Messages are not delivered to businesses.</p><div class="inquiry-list">${investorInquiries.length ? investorInquiries.map(investorInquiryMarkup).join("") : `<div class="dashboard-empty-inline"><i class="bi bi-chat-square-text" aria-hidden="true"></i><span>You have not submitted any demo inquiries yet. Open a sample business profile to start one.</span></div>`}</div></section>
+      <section class="dashboard-panel dashboard-actions-panel"><div class="dashboard-panel-heading"><div><p class="eyebrow">YOUR WORKSPACE</p><h2>Quick actions</h2></div></div><div class="dashboard-actions"><a href="explore.html"><i class="bi bi-search" aria-hidden="true"></i><span>Explore businesses</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="investor-dashboard.html#saved-businesses" data-scroll-saved><i class="bi bi-bookmark" aria-hidden="true"></i><span>Review saved businesses</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="investor-profile.html"><i class="bi bi-person-gear" aria-hidden="true"></i><span>Edit investor profile</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a href="investor-dashboard.html#investor-inquiries"><i class="bi bi-chat-left-text" aria-hidden="true"></i><span>Review inquiries</span><i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></section>
     </div>`;
   const savedPanel = dashboardRoot.querySelector(".investor-dashboard-grid .dashboard-panel");
   if (savedPanel) savedPanel.id = "saved-businesses";
@@ -169,4 +200,20 @@ document.addEventListener("click", (event) => {
   if (button) dashboardNotice(button.dataset.comingSoon);
 });
 
+dashboardRoot.addEventListener("change", (event) => {
+  const statusControl = event.target.closest("[data-inquiry-status]");
+  if (!statusControl) return;
+  if (!window.ElmirixDemo.updateInquiryStatus(statusControl.dataset.inquiryStatus, statusControl.value)) {
+    const savedInquiry = window.ElmirixDemo.getInquiries().find((inquiry) => inquiry.id === statusControl.dataset.inquiryStatus);
+    if (savedInquiry) statusControl.value = savedInquiry.status;
+    dashboardNotice("Inquiry status could not be saved. Check this browser's local storage settings.");
+    return;
+  }
+  dashboardNotice("Demo inquiry status updated in this browser.");
+  window.location.reload();
+});
+
 window.addEventListener("elmirix:profiles-changed", () => window.location.reload());
+window.addEventListener("storage", (event) => {
+  if (event.key === "elmirix-demo-inquiries") window.location.reload();
+});
